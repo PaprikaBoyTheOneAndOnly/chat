@@ -4,9 +4,8 @@
     <meta charset="utf-8"/>
     <meta name="theme-color" content="#000000"/>
     <title>Chat</title>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css"
-          integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
 </head>
 <style>
     .chat-input {
@@ -32,26 +31,29 @@
         background-color: lightgray;
     }
 
+    .timestamp {
+        font-size: 0.6em;
+        margin-right: 1em;
+    }
+
 </style>
 <body>
 <div class="container">
     <div id="chat-container" class="row">
-        <div id="input-row" class="col-xs-12 navbar-fixed-bottom">
-            <div class="input-group">
-                <input id="msg-input" type="text" class="form-control" placeholder="Text..." aria-label="Text..."
-                       aria-describedby="send-btn"/>
-                <span id="send-btn" class="input-group-addon">Send</span>
-            </div>
+        <div id="input-row" class="col-xs-12 input-group fixed-bottom">
+            <input id="msg-input" type="text" class="form-control" placeholder="Text..." aria-label="Text to write"/>
+            <span class="input-group-text" id="send-btn">Send</span>
         </div>
-
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-1.12.4.min.js"
-        integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ"
+<script
+        src="https://code.jquery.com/jquery-3.6.4.min.js"
+        integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8="
         crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"
-        integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.min.js"
+        integrity="sha384-heAjqF+bCxXpCWLa6Zhcp4fu20XoNIA98ecBC1YkdXhszjoejr5y9Q77hIrv8R9i"
         crossorigin="anonymous"></script>
+
 <script>
     const sendButton = $('#send-btn');
     const inputMessage = $("#msg-input");
@@ -70,25 +72,35 @@
     function scrollToBottomOfElement(elm) {
         $('html, body').animate({
             scrollTop: elm.offset().top + elm[0].scrollHeight
-        });
+        }, 1);
     }
 
     function sendText(text) {
-        const messageCol = $("<div />").addClass('chat col-xs-12')
-
-        const now = new Date(Date.now());
-        const timestamp = `${now.getHours()}:${now.getMinutes()}`;
-        const textEl = $("<p />").text(`${timestamp} ${text}`);
-
-        messageCol.append(textEl)
-
-        $('#input-row').before(messageCol);
+        $('#input-row').before(createMessageElement(text));
     }
 
     function handleEnterPressed(event) {
         if ('enter' === event.key.toLowerCase()) {
             sendButton.trigger('click');
         }
+    }
+
+    function createMessageElement(text) {
+        const messageCol = $("<div />").addClass('chat col-xs-12')
+
+        const textEl = $("<p />");
+        textEl.append(createTimestampElement());
+        textEl.append(text);
+
+        messageCol.append(textEl)
+
+        return messageCol;
+    }
+
+    function createTimestampElement() {
+        const now = new Date(Date.now());
+        const timestamp = new Intl.DateTimeFormat('de-ch', {hour: '2-digit', minute: '2-digit'}).format(now);
+        return $('<span />').text(timestamp).addClass('timestamp')
     }
 
     inputMessage.keypress(handleEnterPressed);
